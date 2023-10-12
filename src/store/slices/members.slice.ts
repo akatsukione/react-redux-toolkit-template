@@ -31,6 +31,23 @@ const membersSlice = createSlice({
     getMembersListFailure() {
       // Get todos list failure
     },
+    addMembersListRequest(
+      state: MemberState,
+      action: PayloadAction<AllMembers.AddMembersListRequestPayload>
+    ) {
+      // Get todos list request
+      state.members.push(action.payload);
+      // console.log(action.payload)
+    },
+    addMembersListSuccess(
+      state: MemberState,
+      action: PayloadAction<AllMembers.AddMembersListSuccessPayload>
+    ) {
+      // state.members = action.payload.members;
+    },
+    addMembersListFailure() {
+      // Get todos list failure
+    },
   },
 });
 

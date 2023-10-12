@@ -2,7 +2,6 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { Actions } from '../slices';
 import { getData } from 'utils';
 import { ResponseGenerator } from 'store/types';
-// import { Member } from 'types';
 import { MemberType } from 'models';
 
 function* getMembersListRequestSaga() {
@@ -23,7 +22,6 @@ function* getMembersListRequestSaga() {
     yield put(Actions.members.getMembersListFailure());
   }
 }
-
 export function* membersSaga(): Generator<unknown> {
 //   yield takeLatest('members/getMembersListRequest', getMembersListRequestSaga);
   yield takeLatest(Actions.members.getMembersListRequest.type, getMembersListRequestSaga);

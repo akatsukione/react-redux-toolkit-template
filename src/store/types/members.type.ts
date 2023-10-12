@@ -8,3 +8,9 @@ export type GetMembersListSuccessPayload = {
 };
 
 export type GetMembersListFailurePayload = undefined;
+
+export type AddMembersListRequestPayload = MemberType
+
+export type AddMembersListSuccessPayload = {
+  // members: MemberType[];
+};
