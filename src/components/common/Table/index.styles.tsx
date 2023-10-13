@@ -15,6 +15,14 @@ export const SectionArea = styled.div`
 export const HeaderContainer = styled.tr`
 
 `;
+export const CellInput = styled.input`
+  height: 100%;
+  border:none;
+  background-color:inherit;
+  &:hover, &:focus {
+    outline :none;
+  }
+`;
 
 export const HeaderItem = styled.th`
 padding: 8px;

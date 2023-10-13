@@ -1,6 +1,7 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonComponent } from "components";
+import { AppActions, useAppDispatch, useAppSelector } from "store";
 import {
   Container,
   SectionArea,
@@ -10,6 +11,7 @@ import {
   Body,
   RowContainer,
   RowItem,
+  CellInput,
 } from "./index.styles";
 
 interface MemberDataType {
@@ -21,12 +23,15 @@ interface TableProps {
   records: MemberDataType[];
   columns: string[];
   renders?: Map<string, (column: string, value: unknown) => unknown>;
+  modalAction: (id?: number) => void;
 }
 
 export const TableComponent: React.FC<TableProps> = (props) => {
+  const dispatch = useAppDispatch();
   const { headers, columns, records } = props;
   const [memberData, setMemberData] = React.useState<MemberDataType[]>(records);
   const [columnToSort, setColumnToSort] = React.useState<string>("Member ID");
+
   const [sortState, setSortState] = React.useState<number>(0);
   const [columnState, setColumnState] = React.useState<string>("id");
 
@@ -34,12 +39,16 @@ export const TableComponent: React.FC<TableProps> = (props) => {
     setSortState((prevState) =>
       prevState === 2 ? (prevState = 1) : prevState + 1
     );
-    setColumnToSort(columnName);
+    setColumnToSort(()=>columnName);
   };
-
   React.useEffect(() => {
-    setMemberData(records);
-  }, [records]);
+    dispatch(AppActions.members.sortMembersListRequest({sortState,columnState}));
+    // console.log("second",sortState, columnState);
+  }, [sortState, columnState]);
+
+  // React.useEffect(() => {
+  //   setMemberData(records);
+  // }, [records]);
 
   React.useEffect(() => {
     switch (columnToSort) {
@@ -65,8 +74,8 @@ export const TableComponent: React.FC<TableProps> = (props) => {
     setSortState(1);
   }, [columnState]);
 
-  React.useEffect(() => {
-    let temp_data = Object.values(memberData);
+  const sortTable = (state: number, column: string) => {
+    let temp_data = [...memberData];
     if (columnState === "merits" || columnState === "height") {
       sortState === 1 &&
         temp_data.sort((a, b) => a[columnState] - b[columnState]);
@@ -79,16 +88,38 @@ export const TableComponent: React.FC<TableProps> = (props) => {
         temp_data.sort((a, b) => b[columnState].localeCompare(a[columnState]));
     }
     setMemberData(temp_data);
-  }, [sortState, columnState]);
-  
-  const onUpdateBtnClicked = () => {};
-  const onDeleteBtnClicked = () => {};
+  }
+
+  const onUpdateBtnClicked = (id: number) => {
+    props.modalAction(id);
+  };
+  const onDeleteBtnClicked = (id: number) => {
+    if (window.confirm("Are you sure?")) {
+      dispatch(AppActions.members.deleteMembersListRequest(id));
+    }
+  };
+  const selectCell = (
+    e: React.MouseEvent<HTMLInputElement>,
+    column: string
+  ) => {
+    const cells = document.querySelectorAll("td");
+    cells.forEach((cell) => {
+      cell.style.borderColor = "#DDD";
+    });
+    if (column !== "id") {
+      const target = e.target as HTMLInputElement;
+      if (target.parentElement) {
+        target.parentElement.style.borderColor = "red";
+      }
+    }
+  };
+  const chageCellData = (value: string, id: number, column: string) => {
+    dispatch(
+      AppActions.members.updateCellMembersListRequest({ id, column, value })
+    );
+  };
   return (
     <div>
-      <SectionArea>
-        
-      </SectionArea>
-
       <SectionArea>
         <Container>
           <Header>
@@ -125,17 +156,47 @@ export const TableComponent: React.FC<TableProps> = (props) => {
             </HeaderContainer>
           </Header>
           <Body>
-            {memberData.map((record, index) => (
+            {records.map((record: MemberDataType, index: number) => (
               <RowContainer key={index}>
                 {columns.map((column) =>
                   column !== "actions" ? (
-                    <RowItem key={column}>{record[column]}</RowItem>
+                    <RowItem key={column}>
+                      {column === "id" ? (
+                        record[column]
+                      ) : (
+                        // record[column]
+                        <CellInput
+                          type="text"
+                          onClick={(
+                            event: React.MouseEvent<HTMLInputElement>
+                          ) => selectCell(event, column)}
+                          key={column}
+                          value={record[column]}
+                          onChange = {(e)=>
+                            chageCellData(e.target.value, record.id, column)
+                          }
+                          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                            if (e.key === 'Enter') {
+                              // Enter key pressed
+                              console.log("Enter key pressed. Input value:", e.currentTarget.value);
+                            }
+                          }}
+                            />
+                            // chageCellData(e.target.value, record.id, column)
+                      )}
+                    </RowItem>
                   ) : (
                     <RowItem key={column}>
-                      <ButtonComponent onBtnClick={onUpdateBtnClicked}>
+                      <ButtonComponent
+                        rowId={index}
+                        onBtnClick={() => onUpdateBtnClicked(record.id)}
+                      >
                         Edit
                       </ButtonComponent>
-                      <ButtonComponent onBtnClick={onDeleteBtnClicked}>
+                      <ButtonComponent
+                        rowId={index}
+                        onBtnClick={() => onDeleteBtnClicked(record.id)}
+                      >
                         Delete
                       </ButtonComponent>
                     </RowItem>
@@ -146,7 +207,6 @@ export const TableComponent: React.FC<TableProps> = (props) => {
           </Body>
         </Container>
       </SectionArea>
-      
     </div>
   );
 };

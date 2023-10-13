@@ -9,7 +9,19 @@ export type GetMembersListSuccessPayload = {
 
 export type GetMembersListFailurePayload = undefined;
 
-export type AddMembersListRequestPayload = MemberType
+export type MembersListRequestPayload = MemberType
+
+export type DeleteMemberRequestPayload = number
+
+export type CellMembersListRequestPayload = {
+  id: number,
+  column: string,
+  value: string
+}
+export type SortMemberRequestPayload = {
+  sortState: number,
+  columnState: string
+}
 
 export type AddMembersListSuccessPayload = {
   // members: MemberType[];

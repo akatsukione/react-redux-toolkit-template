@@ -16,34 +16,56 @@ interface ModalInterface {
   title: string;
   closeModal: () => void;
   show: boolean;
-  memberid: string;
-  name: string;
-  address: string;
-  merit: number;
-  height: number;
+  memberData: Partial<MemberType>;
+  index: number;
 }
 export const ModalComponent: React.FC<ModalInterface> = (props) => {
   const dispatch = useAppDispatch();
   const members = useAppSelector(({ members }) => members.members);
-  const [memberidState, setMemberId] = React.useState<string>(props.memberid);
-  const [nameState, setName] = React.useState<string>(props.name);
-  const [addressState, setAddress] = React.useState<string>(props.address);
-  const [meritState, setMerit] = React.useState<number>(props.merit);
-  const [heightState, setHeight] = React.useState<number>(props.height);
+  const [memberidState, setMemberId] = React.useState<string | undefined>(
+    props.memberData?.memberId?.toString() || ""
+  );
+  const [nameState, setName] = React.useState<string | undefined>(
+    props.memberData?.name?.toString() || ""
+  );
+  const [addressState, setAddress] = React.useState<string | undefined>(
+    props.memberData?.address?.toString() || ""
+  );
+  const [meritState, setMerit] = React.useState<number | undefined>(
+    typeof props.memberData?.merits === 'number'
+    ? props.memberData?.merits
+    : parseInt(props.memberData?.merits || "0")
+  );
+  const [heightState, setHeight] = React.useState<number | undefined>(
+    typeof props.memberData?.height === 'number'
+    ? props.memberData?.height
+    : parseInt(props.memberData?.height || "0")
+  );
 
   const MemberAction = () => {
-    // console.log("type",typeof members);
-    // const temp_data = Object.values(members);
-    const newMember:MemberType = {
-      id: members.length + 1,
-      memberId: memberidState,
-      name: nameState,
-      address: addressState,
-      merits: meritState,
-      height: heightState
-    };
-    dispatch(AppActions.members.addMembersListRequest(newMember));
-    // console.log(members)
+
+    if (props.index === -1) {
+      const newMember: MemberType = {
+        id: members.length + 1,
+        memberId: memberidState || "",
+        name: nameState || "",
+        address: addressState || "",
+        merits: meritState || 0,
+        height: heightState || 0,
+      };
+      dispatch(AppActions.members.addMembersListRequest(newMember));
+    } else {
+      console.log(props.index)
+      const updateMember: MemberType = {
+        id: props.index,
+        memberId: memberidState || "",
+        name: nameState || "",
+        address: addressState || "",
+        merits: meritState || 0,
+        height: heightState || 0,
+      };
+      dispatch(AppActions.members.updateMembersListRequest(updateMember));
+    }
   };
   return (
     <ModalView>
@@ -126,7 +148,7 @@ export const ModalComponent: React.FC<ModalInterface> = (props) => {
           />
         </ModalBodyView>
         <ModalFooterView>
-          <ButtonComponent onBtnClick={MemberAction}>Create Mmber</ButtonComponent>
+          <ButtonComponent onBtnClick={MemberAction}>Save</ButtonComponent>
         </ModalFooterView>
       </ModalContentView>
     </ModalView>

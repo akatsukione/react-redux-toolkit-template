@@ -1,11 +1,16 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  width: 100%;
+  width: 80%;
   height: 100%;
-  padding: 16px;
-
+  padding: 30px;
+  margin: auto;
   
+  justify-content: center;
+  `;
+  export const BarContainer = styled.div`
+  padding: 16px;
+  display: flex;
   justify-content: center;
 `;
 
