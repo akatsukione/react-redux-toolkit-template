@@ -12,6 +12,12 @@ const initialState: MemberState = {
   members: [],
 };
 
+export enum SortState {
+  DEFAULT,
+  DESC,
+  ASC,
+}
+
 const membersSlice = createSlice({
   name: 'members',
   initialState: initialState,
@@ -26,7 +32,7 @@ const membersSlice = createSlice({
       state: MemberState,
       action: PayloadAction<AllMembers.GetMembersListSuccessPayload>
     ) {
-      state.members = action.payload.members;
+      state.members = [...action.payload.members];
     },
     getMembersListFailure() {
       // Get todos list failure
@@ -85,14 +91,14 @@ const membersSlice = createSlice({
     ) {
       // let temp_data = [...memberData];
     if (action.payload.columnState === "merits" || action.payload.columnState === "height") {
-      action.payload.sortState === 1 &&
+      action.payload.sortState === SortState.DESC &&
       state.members.sort((a, b) => Number(a[action.payload.columnState]) - Number(b[action.payload.columnState]));
-        action.payload.sortState === 2 &&
+        action.payload.sortState === SortState.ASC &&
         state.members.sort((a, b) => Number(b[action.payload.columnState]) - Number(a[action.payload.columnState]));
     } else {
-      action.payload.sortState === 1 &&
+      action.payload.sortState === SortState.DESC &&
       state.members.sort((a, b) => String(a[action.payload.columnState]).localeCompare(String(b[action.payload.columnState])));
-        action.payload.sortState === 2 &&
+        action.payload.sortState === SortState.ASC &&
         state.members.sort((a, b) => String(b[action.payload.columnState]).localeCompare(String(a[action.payload.columnState])));
     }
     },

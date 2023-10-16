@@ -41,7 +41,7 @@ export const MemberView: React.FC = () => {
   });
   useEffect(() => {
     dispatch(AppActions.members.getMembersListRequest());
-  }, []);
+  }, [dispatch]);
   const onToggleModal = (id?: number) => {
     setModalTitle("Member Action");
     setShowModal((p) => !p);
@@ -88,7 +88,12 @@ export const MemberView: React.FC = () => {
         ></ModalComponent>
       )}
     <BarContainer>
+        {/* <select onChange={(e) => {
 
+        }}>
+          <option value={dependency}>height</option>
+          <option value="merits">merits</option>
+        </select> */}
     <BarChartComponent members = {members} x={'height'}/>
     <BarChartComponent members = {members} x={'merits'}/>
     </BarContainer>

@@ -12,6 +12,11 @@ export const Container = styled.div`
   padding: 16px;
   display: flex;
   justify-content: center;
+  & > select {
+    margin:30px;
+    height:30px;
+    width:100px;
+  }
 `;
 
 export const Content = styled.h1``;

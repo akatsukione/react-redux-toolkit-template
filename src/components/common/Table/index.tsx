@@ -13,6 +13,7 @@ import {
   RowItem,
   CellInput,
 } from "./index.styles";
+import { SortState } from "store/slices/members.slice";
 
 interface MemberDataType {
   [key: string]: any;
@@ -22,7 +23,6 @@ interface TableProps {
   headers: string[];
   records: MemberDataType[];
   columns: string[];
-  renders?: Map<string, (column: string, value: unknown) => unknown>;
   modalAction: (id?: number) => void;
 }
 
@@ -36,13 +36,19 @@ export const TableComponent: React.FC<TableProps> = (props) => {
   const [columnState, setColumnState] = React.useState<string>("id");
 
   const sortColumn = (columnName: string) => {
-    setSortState((prevState) =>
-      prevState === 2 ? (prevState = 1) : prevState + 1
-    );
-    setColumnToSort(()=>columnName);
+    if (columnName !== columnToSort) {
+      setSortState(1)
+    } else {
+      setSortState((prevState) =>
+        prevState === 2 ? (prevState = 1) : prevState + 1
+      );
+    }
+    setColumnToSort(columnName);
   };
   React.useEffect(() => {
-    dispatch(AppActions.members.sortMembersListRequest({sortState,columnState}));
+    dispatch(
+      AppActions.members.sortMembersListRequest({ sortState, columnState })
+    );
     // console.log("second",sortState, columnState);
   }, [sortState, columnState]);
 
@@ -70,25 +76,25 @@ export const TableComponent: React.FC<TableProps> = (props) => {
     }
   }, [columnToSort]);
 
-  React.useEffect(() => {
-    setSortState(1);
-  }, [columnState]);
+  // React.useEffect(() => {
+  //   setSortState(1);
+  // }, [columnState]);
 
-  const sortTable = (state: number, column: string) => {
-    let temp_data = [...memberData];
-    if (columnState === "merits" || columnState === "height") {
-      sortState === 1 &&
-        temp_data.sort((a, b) => a[columnState] - b[columnState]);
-      sortState === 2 &&
-        temp_data.sort((a, b) => b[columnState] - a[columnState]);
-    } else {
-      sortState === 1 &&
-        temp_data.sort((a, b) => a[columnState].localeCompare(b[columnState]));
-      sortState === 2 &&
-        temp_data.sort((a, b) => b[columnState].localeCompare(a[columnState]));
-    }
-    setMemberData(temp_data);
-  }
+  // const sortTable = (state: number, column: string) => {
+  //   let temp_data = [...memberData];
+  //   if (columnState === "merits" || columnState === "height") {
+  //     sortState === 1 &&
+  //       temp_data.sort((a, b) => a[columnState] - b[columnState]);
+  //     sortState === 2 &&
+  //       temp_data.sort((a, b) => b[columnState] - a[columnState]);
+  //   } else {
+  //     sortState === 1 &&
+  //       temp_data.sort((a, b) => a[columnState].localeCompare(b[columnState]));
+  //     sortState === 2 &&
+  //       temp_data.sort((a, b) => b[columnState].localeCompare(a[columnState]));
+  //   }
+  //   setMemberData(temp_data);
+  // }
 
   const onUpdateBtnClicked = (id: number) => {
     props.modalAction(id);
@@ -132,19 +138,23 @@ export const TableComponent: React.FC<TableProps> = (props) => {
                     <>
                       {columnToSort === header ? (
                         <>
-                          {sortState === 0 && (
-                            <FontAwesomeIcon icon={["fas", "sort"]} />
-                          )}
-                          {sortState === 1 && (
-                            <FontAwesomeIcon
-                              icon={["fas", "arrow-down-short-wide"]}
-                            />
-                          )}
-                          {sortState === 2 && (
-                            <FontAwesomeIcon
-                              icon={["fas", "arrow-up-wide-short"]}
-                            />
-                          )}
+                          {
+                            {
+                              [SortState.DEFAULT]: (
+                                <FontAwesomeIcon icon={["fas", "sort"]} />
+                              ),
+                              [SortState.DESC]: (
+                                <FontAwesomeIcon
+                                  icon={["fas", "arrow-down-short-wide"]}
+                                />
+                              ),
+                              [SortState.ASC]: (
+                                <FontAwesomeIcon
+                                  icon={["fas", "arrow-up-wide-short"]}
+                                />
+                              ),
+                            }[sortState]
+                          }
                         </>
                       ) : (
                         <FontAwesomeIcon icon={["fas", "sort"]} />
@@ -167,22 +177,27 @@ export const TableComponent: React.FC<TableProps> = (props) => {
                         // record[column]
                         <CellInput
                           type="text"
-                          onClick={(
-                            event: React.MouseEvent<HTMLInputElement>
-                          ) => selectCell(event, column)}
+                          // onClick={(
+                          //   event: React.MouseEvent<HTMLInputElement>
+                          // ) => selectCell(event, column)}
                           key={column}
                           value={record[column]}
-                          onChange = {(e)=>
+                          onChange={(e) =>
                             chageCellData(e.target.value, record.id, column)
                           }
-                          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                            if (e.key === 'Enter') {
-                              // Enter key pressed
-                              console.log("Enter key pressed. Input value:", e.currentTarget.value);
-                            }
-                          }}
-                            />
-                            // chageCellData(e.target.value, record.id, column)
+                          // onKeyDown={(
+                          //   e: React.KeyboardEvent<HTMLInputElement>
+                          // ) => {
+                          //   if (e.key === "Enter") {
+                          //     // Enter key pressed
+                          //     console.log(
+                          //       "Enter key pressed. Input value:",
+                          //       e.currentTarget.value
+                          //     );
+                          //   }
+                          // }}
+                        />
+                        // chageCellData(e.target.value, record.id, column)
                       )}
                     </RowItem>
                   ) : (

@@ -20,7 +20,7 @@ export const CellInput = styled.input`
   border:none;
   background-color:inherit;
   &:hover, &:focus {
-    outline :none;
+    outline: none;
   }
 `;
 
@@ -41,4 +41,7 @@ export const RowItem = styled.td`
 padding: 8px;
 text-align: left;
 border-bottom: 1px solid #DDD;
+&:focus-within {
+  border-bottom: 1px solid red;
+}
 `;

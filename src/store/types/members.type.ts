@@ -1,5 +1,6 @@
 // import { Member } from 'types';
 import { MemberType } from 'models';
+import { SortState } from 'store/slices/members.slice';
 /* eslint-disable @typescript-eslint/ban-types */
 export type GetMembersListRequestPayload = undefined;
 
@@ -19,7 +20,7 @@ export type CellMembersListRequestPayload = {
   value: string
 }
 export type SortMemberRequestPayload = {
-  sortState: number,
+  sortState: SortState,
   columnState: string
 }
 
